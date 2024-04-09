@@ -65,7 +65,7 @@ def view_form():
                     excel.Quit()
 
                     if file_path:
-                        temp_path = "C:/Users/SkNasirHussain/Desktop/copy/Templates"
+                        temp_path = "C:/Users/SkNasirHussain/Desktop/AddinVBA/main/Templates"
                         file_path_html = os.path.join(temp_path, "Stock.html")
 
                         xlsx2html(file_path, file_path_html)
@@ -119,7 +119,7 @@ def view_form():
                                 file_name = os.path.basename(file_url) + ".xlsx"
                                 
                                 # Prompt user for download path
-                                download_path = 'C:/Users/SkNasirHussain/Desktop/copy/Templates' #D:/Loan/LoanTemplate/Stock_portfolio_api/Templates
+                                download_path = 'C:/Users/SkNasirHussain/Desktop/AddinVBA/main/Templates' #D:/Loan/LoanTemplate/Stock_portfolio_api/Templates
                                 file_path = ""
 
                                 if download_path:                                

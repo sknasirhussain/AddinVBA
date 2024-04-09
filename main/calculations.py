@@ -90,16 +90,18 @@ def calculate(amount, tenure, payments):
 
         target_sheet = workbook.Worksheets("Sheet1 (2)")
         target_sheet.Activate()
- 
+
         temp = tempfile.gettempdir()
  
+        excelgen = "C:/Users/SkNasirHussain/pursuit software development pvt. ltd/Sujit Sarkar - EXCELGEN"
+ 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"xl_{timestamp}.xlsx"
+        file_name = f"Loan_{timestamp}.xlsx"
        
         file_path = os.path.join(temp, file_name)
 
          #Generating QR code
-        img = qrcode.make("https://pursuitsoftwarebiz-my.sharepoint.com/personal/sujit_s_pursuitsoftware_biz/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsujit%5Fs%5Fpursuitsoftware%5Fbiz%2FDocuments%2FEXCELGEN&ct=1712576087622&or=Teams%2DHL&ga=1" + "\n\n\n" + "Version 1")
+        img = qrcode.make("https://pursuitsoftwarebiz-my.sharepoint.com/personal/sujit_s_pursuitsoftware_biz/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fsujit%5Fs%5Fpursuitsoftware%5Fbiz%2FDocuments%2FEXCELGEN&ct=1712576087622&or=Teams%2DHL&ga=1/" + file_name + "\n\n\n" + "Version 1")
         type(img)  # qrcode.image.pil.PilImage
 
         # Desired size in inches
@@ -112,6 +114,7 @@ def calculate(amount, tenure, payments):
         # Resize the image
         img = img.resize((desired_width, desired_height))
 
+
         qr_img_path = os.path.join(temp, "qr.png")
         img.save(qr_img_path)   
 
@@ -120,11 +123,11 @@ def calculate(amount, tenure, payments):
 
         # Calculate position to insert the image at the bottom right corner
         
-        range_N2 = target_sheet.Range("B1")
+        range_B1 = target_sheet.Range("B1")
 
         # Get the left and top positions of the range "N2"
-        qr_left = range_N2.Left
-        qr_top = range_N2.Top
+        qr_left = range_B1.Left
+        qr_top = range_B1.Top
 
         target_sheet.Shapes.AddPicture(
         qr_img_path, 
@@ -141,23 +144,21 @@ def calculate(amount, tenure, payments):
         workbook.Close()
         excel.DisplayAlerts = True
  
-        print("hello")
-        print(file_path)
- 
         excel.DisplayAlerts = True
-       
-        #workbook.SaveAs(r"C:/Users/SkNasirHussain/Documents/example-changed.xlsx")
-       
+              
         excel.Quit()
         del excel
  
         pythoncom.CoInitialize()
  
         if file_path:
-            temp_path = 'C:/Users/SkNasirHussain/Desktop/copy/Templates'
+            print("Generating HTML file...")
+
+            temp_path = 'C:/Users/SkNasirHussain/Desktop/AddinVBA/main/Templates'
             file_path_html = os.path.join(temp_path, "Loan.html")
            
             xlsx2html(file_path, file_path_html)
+
             print("Path of the html is: ",file_path_html)
            
             with open(file_path_html, 'r') as html_file:
@@ -169,34 +170,49 @@ def calculate(amount, tenure, payments):
             # Write the modified HTML content back to the HTML file
             with open(file_path_html, 'w') as html_file:
                 html_file.write(html_content)
+               
+                download_path = "C:/Users/SkNasirHussain/pursuit software development pvt. ltd/Sujit Sarkar - EXCELGEN"
+                
+                if download_path:
+                 
+                    down_file_path = os.path.join(download_path, file_name)
+                else:
+                    down_file_path = os.path.join(os.getcwd(), file_name)
+                
+                # Move temporary file to the desired download path
+
+                print("tring to store at ", down_file_path)
+                shutil.move(file_path, down_file_path)
+                print("File succcessfully stored to excelgen at: ", down_file_path, "!")
+                
                 # return render_template('Loan.html',html_content=html_content)
                
-                print("Attempting to upload file to File.io...")
-                # Upload the Excel file to File.io
-                with open(file_path, 'rb') as file:
-                    response = requests.post(url, headers, files={'file': file })
-                    if response.status_code == 200:
-                        print("File upload successful")
-                        # File successfully uploaded to File.io
-                        file_io_url = response.json()['link']
-                        print(response.json())
-                        download_file(file_io_url)
+                # print("Attempting to upload file to File.io...")
+                # # Upload the Excel file to File.io
+                # with open(file_path, 'rb') as file:
+                #     response = requests.post(url, headers, files={'file': file })
+                #     if response.status_code == 200:
+                #         print("File upload successful")
+                #         # File successfully uploaded to File.io
+                #         file_io_url = response.json()['link']
+                #         print(response.json())
+                #         download_file(file_io_url)
 
-                        #print(file_io_url)
-                        # Redirect the user to file_io_url
+                #         #print(file_io_url)
+                #         # Redirect the user to file_io_url
 
-                        return render_template('Loan.html', html_content=html_content)
-                        # return redirect(file_io_url)
-                        # encoded_file_url = urlsafe_b64encode(file_io_url.encode()).decode()
-                        # return redirect(url_for('download_file', file_url=encoded_file_url))    
+                #         return render_template('Loan.html', html_content=html_content)
+                #         # return redirect(file_io_url)
+                #         # encoded_file_url = urlsafe_b64encode(file_io_url.encode()).decode()
+                #         # return redirect(url_for('download_file', file_url=encoded_file_url))    
  
-                    else:
-                        print('Upload failed', response.status_code)
+                #     else:
+                #         print('Upload failed', response.status_code)
                        
         else:
                 print("no file path")
    
-        return result, file_path
+        return render_template('Loan.html', html_content=html_content)
  
     except IOError:
  
